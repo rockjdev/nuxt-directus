@@ -7,8 +7,10 @@ import {
   useState,
   AsyncData,
   useAsyncData,
+  clearNuxtData,
 } from "#app";
 import useDirectus from "./useDirectus";
+import { withQuery, joinURL } from "ufo";
 
 type AuthProvider =
   | "google"
@@ -30,12 +32,13 @@ type UserT = ItemInput<UserItem>;
 export default function () {
   const publicConfig = useRuntimeConfig().public.directus;
 
-  const useUser: () => Ref<(UserT & MyDirectusTypes["directus_users"]) | null> = () =>
+  const useUser: () => Ref<
+    (UserT & MyDirectusTypes["directus_users"]) | null
+  > = () =>
     useState<(UserT & MyDirectusTypes["directus_users"]) | null>(
       "nuxt_directus_auth_user",
-      () => null);
-
-  const route = useRoute();
+      () => null
+    );
 
   const directus = useDirectus();
 
@@ -43,33 +46,59 @@ export default function () {
     email: string;
     password: string;
     otp?: string;
+    redirect?: string;
   }): FetchReturnT<AuthResult> {
+    const route = useRoute();
+
+    // The path of the protected route the user has entered
+    const returnToPath = route.query.redirect?.toString();
+
+    // The path to redirect to on login success
+    const redirectTo =
+      credentials.redirect || returnToPath || publicConfig.auth.redirect.home;
+
     return useAsyncData(() =>
-      directus.auth
-        .login(credentials)
-        .then(async (res) => {
-          await fetchUser();
-          await navigateTo(publicConfig.auth.redirect.home);
-          return res;
-        })
+      directus.auth.login(credentials).then(async (res) => {
+        await fetchUser();
+        await navigateTo(redirectTo);
+        return res;
+      })
     );
   }
 
-  function loginWithProvider(provider: AuthProvider) {
-    const redirectUrl = getRedirectUrl(publicConfig.auth.redirect.callback);
+  function loginWithProvider(arg: {
+    provider: AuthProvider;
+    redirect?: string;
+  }) {
+    const route = useRoute();
+
+    // The path of the protected route the user has entered
+    const returnToPath = route.query.redirect?.toString();
+
+    const redirectTo = arg.redirect || returnToPath;
+
+    let redirectUrl = getRedirectUrl(publicConfig.auth.redirect.callback);
+
+    if (redirectTo) {
+      redirectUrl = withQuery(redirectUrl, { redirect: redirectTo });
+    }
 
     if (process.client) {
-      window.location.replace(
-        `${publicConfig.baseUrl}/auth/login/${provider}?redirect=${redirectUrl}`
+      const url = withQuery(
+        joinURL(publicConfig.baseUrl, "/auth/login", arg.provider),
+        { redirect: redirectUrl }
       );
+
+      window.location.replace(url);
     }
   }
 
   async function fetchUser(): FetchReturnT<UserT> {
     const user = useUser();
-    console.log(publicConfig.auth.userFields);
     return useAsyncData(() =>
-      directus.users.me.read({fields:publicConfig.auth.userFields}).then((res) => (user.value = res))
+      directus.users.me
+        .read({ fields: publicConfig.auth.userFields })
+        .then((res) => (user.value = res))
     );
   }
 
@@ -78,6 +107,9 @@ export default function () {
     return useAsyncData(() =>
       directus.auth.logout().then(async () => {
         user.value = null;
+
+        clearNuxtData();
+
         await navigateTo(publicConfig.auth.redirect.logout);
       })
     );
@@ -101,7 +133,7 @@ export default function () {
   }
 
   function getRedirectUrl(path: string) {
-    return publicConfig.nuxtBaseUrl + path;
+    return joinURL(publicConfig.nuxtBaseUrl, path);
   }
 
   /**
@@ -117,6 +149,8 @@ export default function () {
   }
 
   async function resetPassword(password: string): FetchReturnT<any> {
+    const route = useRoute();
+
     return useAsyncData(() =>
       directus.transport.post("/auth/password/reset", {
         password: password,

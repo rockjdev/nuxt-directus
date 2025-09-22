@@ -23,6 +23,7 @@ export interface ModuleOptions {
     redirect: {
       login: string;
       logout: string;
+      loggedOut?: string;
       home: string;
       callback: string;
       resetPassword: string;
@@ -50,6 +51,7 @@ export default defineNuxtModule<ModuleOptions>({
       userFields: [],
       refreshTokenCookieName: "directus_refresh_token",
       redirect: {
+        loggedOut: "",
         home: "/home",
         login: "/auth/login",
         logout: "/auth/login",
@@ -60,17 +62,15 @@ export default defineNuxtModule<ModuleOptions>({
   },
   setup(options, nuxt) {
     if (!options.baseUrl) {
-      logger.warn(
-        `Please make sure to set Directus baseUrl in ${name} options`
-      );
+      logger.warn(`[${name}] Please make sure to set Directus baseUrl`);
     }
 
     if (!options.nuxtBaseUrl) {
-      logger.warn(`Please make sure to set Nuxt baseUrl in ${name} options`);
+      logger.warn(`[${name}] Please make sure to set Nuxt baseUrl`);
     }
 
     if (!options.auth?.enabled) {
-      logger.info(`Auth is disabled in ${name} options`);
+      logger.info(`[${name}] Auth is disabled`);
     }
 
     //Get the runtime directory
@@ -90,11 +90,11 @@ export default defineNuxtModule<ModuleOptions>({
     const composables = resolve(runtimeDir, "composables");
     addImportsDir(composables);
 
-    //Optimize axios & qs to ESM
+    //Optimize axios to ESM
     extendViteConfig((config) => {
       config.optimizeDeps = config.optimizeDeps || {};
       config.optimizeDeps.include = config.optimizeDeps.include || [];
-      config.optimizeDeps.include.push("axios", "qs");
+      config.optimizeDeps.include.push("axios");
     });
 
     //Initialize the module options

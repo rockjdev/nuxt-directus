@@ -3,7 +3,7 @@
         <h1>Login</h1>
         <button @click="handleLogin">Login</button>
         <button @click="handleRequestPasswordReset">Forgot password</button>
-        <button @click="() => loginWithProvider('google')">Login with google</button>
+        <button @click="() => loginWithProvider({ provider: 'google' })">Login with google</button>
     </div>
 </template>
 
@@ -15,7 +15,7 @@ const { login, requestPasswordReset, loginWithProvider } = useDirectusAuth()
 
 
 async function handleLogin() {
-    const { data, error } = await login({ email: "becem.gharbi@live.com", password: "hello123" })
+    const { data, error } = await login({ email: "tester@test.com", password: "test123" })
     console.log("data ", data.value?.access_token)
     console.log("error", error.value?.errors[0].message)
 }

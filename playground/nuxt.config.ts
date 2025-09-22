@@ -6,15 +6,18 @@ export default defineNuxtConfig({
   modules: [myModule],
   ssr: true,
   directus: {
-    // auth: {
-    //   defaultRoleId: "722a1f32-cf16-4a09-942e-148885df0ec2",
-    //   redirect: {
-    //     home: "/home",
-    //     login: "/auth/login",
-    //     logout: "/auth/login",
-    //     resetPassword: "/auth/reset-password",
-    //     callback: "/auth/callback",
-    //   },
-    // },
+    auth: {
+      enabled: true,
+      baseUrl: "http://localhost:8055",
+      nuxtBaseUrl: "http://localhost:3000",
+      defaultRoleId: "90087fa8-3bf4-4e1f-9b14-f4aadb4c4d0a",
+      redirect: {
+        home: "/home",
+        login: "/auth/login",
+        logout: "/auth/login",
+        resetPassword: "/auth/reset-password",
+        callback: "/auth/callback",
+      },
+    },
   },
 });

@@ -1,6 +1,6 @@
 {
   "name": "@bg-dev/nuxt-directus",
-  "version": "0.0.0-development",
+  "version": "1.0.2",
   "license": "MIT",
   "type": "module",
   "author": "Becem Gharbi",
@@ -29,29 +29,20 @@
     "dev": "nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
-    "semantic-release": "semantic-release",
-    "commit": "cz"
+    "release": "npm run prepack && changelogen --release && npm publish && git push --follow-tags"
   },
   "dependencies": {
-    "@directus/sdk": "^10.3.3",
-    "@nuxt/kit": "^3.3.2",
-    "defu": "^6.1.2",
-    "qs": "^6.11.1"
+    "@directus/sdk": "^10.3.5",
+    "@nuxt/kit": "^3.6.5",
+    "defu": "^6.1.2"
   },
   "devDependencies": {
-    "@nuxt/module-builder": "^0.2.1",
-    "@nuxt/schema": "^3.2.2",
+    "@nuxt/module-builder": "^0.4.0",
+    "@nuxt/schema": "^3.6.5",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
-    "@types/qs": "^6.9.7",
-    "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^8.37.0",
-    "nuxt": "^3.3.2",
-    "semantic-release": "^21.0.0"
+    "changelogen": "^0.5.4",
+    "eslint": "^8.45.0",
+    "nuxt": "^3.6.5"
   },
-  "repository": "https://github.com/becem-gharbi/nuxt-directus.git",
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  }
+  "repository": "https://github.com/becem-gharbi/nuxt-directus.git"
 }

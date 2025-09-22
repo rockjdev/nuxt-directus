@@ -19,15 +19,33 @@ const user = useUser()
 const directus = useDirectus();
 
 async function fetchItem() {
-    const Author = directus.items("author")
+    const Book = directus.items("book")
 
-    const authors = await Author.readByQuery({
-        fields: ["posts.*"],
-    })
+    const authors = await Book.readByQuery()
 }
 
 async function handleLogout() {
     const { error } = await logout()
     console.log(error.value?.errors[0])
 }
+
+const users = await directus.items("directus_users").readByQuery({
+    fields: [
+        'email',
+        'first_name',
+        'last_name',
+        'id',
+    ],
+    filter: {
+        _and: [
+            {
+                first_name: "Admin"
+            }, {
+                provider: {
+                    _eq: "default"
+                }
+            }
+        ]
+    }
+})
 </script>

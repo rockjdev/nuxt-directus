@@ -1,11 +1,10 @@
 ## Nuxt Directus
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![License][license-src]][license-href]
-[![Nuxt][nuxt-src]][nuxt-href]
+A Nuxt 3 module for integrating the official Directus [JS SDK](https://github.com/directus/sdk) into your Nuxt 3 project.
 
-A Nuxt 3 module for integrating the official Directus JS SDK into your Nuxt 3 project
+**IMPORTANT**
+
+_This version `1` is based on version `10` of Directus SDK, which is no longer supported as indicated by [docs](https://docs.directus.io/reference/old-sdk.html). It will still be maintained, but it's recommended to migrate to version `2` to benefit the features of latest Directus SDK._
 
 ## Features
 
@@ -23,10 +22,10 @@ Add `@bg-dev/nuxt-directus` dependency to your project
 
 ```bash
 # Using npm
-npm install --save-dev @bg-dev/nuxt-directus
+npm install --save-dev @bg-dev/nuxt-directus@1
 
 # Using yarn
-yarn add --dev @bg-dev/nuxt-directus
+yarn add --dev @bg-dev/nuxt-directus@1
 ```
 
 ## Setup
@@ -43,6 +42,7 @@ export default defineNuxtConfig({
     auth: {
       enabled: false,
       enableGlobalAuthMiddleware: false, // Enable auth middleware on every page
+      userFields: [], // Select user fields
       refreshTokenCookieName: "directus_refresh_token",
       defaultRoleId: "", // Role id assigned for new registered users
       redirect: {
@@ -51,6 +51,7 @@ export default defineNuxtConfig({
         home: "/home", // Path to redirect after successful login
         resetPassword: "/auth/reset-password", // Path to redirect for password reset
         callback: "/auth/callback", // Path to redirect after login with provider
+        loggedOut: "", // Path to redirect when loggedIn & refresh token is expired
       },
     },
   },
@@ -99,30 +100,9 @@ definePageMeta({ middleware: "guest" }); // Redirects to home path when loggedIn
 
 ## Notes
 
-- Directus and Nuxt apps SHOULD share the same domain name (SameSite cookies), in development domain SHOULD be 127.0.0.1 ([issue](https://github.com/unjs/ofetch/issues/156))
+- When auth is enabled, Directus and Nuxt apps SHOULD share the same domain name because cookies's sameSite policy is set to `lax`, in development domain SHOULD be 127.0.0.1 ([issue](https://github.com/unjs/ofetch/issues/156))
 - Refer to [directus docs](https://docs.directus.io/self-hosted/sso.html) for general configuration
-
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## License
 
 [MIT License](./LICENSE)
-
-<!-- Badges -->
-
-[npm-version-src]: https://img.shields.io/npm/v/@bg-dev/nuxt-directus/latest.svg?style=flat&colorA=18181B&colorB=28CF8D
-[npm-version-href]: https://npmjs.com/package/@bg-dev/nuxt-directus
-[npm-downloads-src]: https://img.shields.io/npm/dm/@bg-dev/nuxt-directus.svg?style=flat&colorA=18181B&colorB=28CF8D
-[npm-downloads-href]: https://npmjs.com/package/@bg-dev/nuxt-directus
-[license-src]: https://img.shields.io/npm/l/@bg-dev/nuxt-directus.svg?style=flat&colorA=18181B&colorB=28CF8D
-[license-href]: https://npmjs.com/package/@bg-dev/nuxt-directus
-[nuxt-src]: https://img.shields.io/badge/Nuxt-18181B?logo=nuxt.js
-[nuxt-href]: https://nuxt.com

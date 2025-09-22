@@ -11,16 +11,20 @@ export default defineNuxtRouteMiddleware((to) => {
     return;
   }
 
-  if (publicConfig.auth.enableGlobalAuthMiddleware === true) {
-    if (to.meta.auth === false) {
-      return;
-    }
+  if (
+    publicConfig.auth.enableGlobalAuthMiddleware === true &&
+    to.meta.auth === false
+  ) {
+    return;
   }
 
   const { useUser } = useDirectusAuth();
   const user = useUser();
 
   if (!user.value) {
-    return navigateTo(publicConfig.auth.redirect.login);
+    return navigateTo({
+      path: publicConfig.auth.redirect.login,
+      query: { redirect: to.path },
+    });
   }
 });
